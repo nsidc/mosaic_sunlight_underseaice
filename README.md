@@ -1,41 +1,13 @@
-# Template instructions (delete me)
-
-- [ ] Replace the following variables in this README:
-    * `{title}`: The title of this application / repository.
-    * `{audience}`: The target audience of this repository.
-    * `{utility}`: Things this repository enables the audience to do.
-    * `{requirements}`: A bulleted list of pre-requisites.
-    * `{installation}`: Describe how to install this software, with platform-specific
-      instructions if necessary.
-    * `{usage}`: Describe how to use this software, with platform-specific instructions
-      if necessary.
-    * `{troubleshooting}`: Describe any tips or tricks in case the user runs into
-      problems.
-
-- [ ] In the "Level of Support" section, choose one LoS and delete the other.
-
-- [ ] Choose a license, rename it to `LICENSE`, and delete the unused one.
-    * The `NASA` license must be used for DAAC projects. The contract number is our
-      5-year DAAC contract and does not need to be changed or maintained in your
-      codebase unless work extends into a new 5-year contract period.
-    * The `GENERAL` license is for all other work.
-
-- [ ] Delete this section.
-
-
 <img alt="NSIDC logo" src="https://nsidc.org/themes/custom/nsidc/logo.svg" width="150" />
 
 
-# {title}
+# MOSAiC Sunlight Under Sea Ice
 
-{title} enables {audience} to {utility}.
+`mosaic_sunlight_underseaice` is a collection of Jupyter notebooks and python scripts to estimate under-ice sunlight and photosynthetically active radiation (PAR) for GEM2 ice thickness and Magnaprobe snow depth transects collected during the MOSAiC expedition
 
 
 ## Level of Support
 
-* This repository is fully supported by NSIDC. If you discover any problems or bugs,
-  please submit an Issue. If you would like to contribute to this repository, you may fork
-  the repository and submit a pull request. 
 * This repository is not actively supported by NSIDC but we welcome issue submissions and
   pull requests in order to foster community contribution.
 
@@ -45,23 +17,43 @@ nsidc@nsidc.org for more information.
 
 ## Requirements
 
-{requirements}
+You will a python installation for `python 3.10`.  The easiest way to do this is install Anaconda or Miniconda.
+
+Underice sunlight and PAR are estimate using the [`seaice_rt`](https://github.com/andypbarrett/seaice_radiative_transfer) package, which is a python wrapper for the CESM2 Delta-Eddington sea ice radiative transfer model.  You will need to follow the installation instructions for this package.
+
+In addition you will need:  
+- Jupyter Lab to run the notebooks;  
+- `pandas` for reading the transect data;  
+- `numpy`;  
+- `matplotlib` for plotting the results.  
 
 
 ## Installation
 
-{installation}
+1. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the `mosaic_sunlight_underseaice` repoisitory into your own GitHub user account.  
+2. [Clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this fork onto your local computer.  This will create a `mosaic_sunlight_underseaice` directory.
+3. Run the following commands.
+```
+cd mosaic_sunlight_underseaice
+conda env create -f environment.yml
+conda activate panarctic_underice_sunlight
+```  
+4. Follow the installation instructions for [`seaice_rt`](https://github.com/andypbarrett/seaice_radiative_transfer). 
 
 
 ## Usage
 
-{usage}
+The best way to get started is to run the Jupyter notebook [`notebooks/getting_started.ipynb`]().
+
+1. Start Jupyter Lab.  
+2. Navigate to the `notebooks` folder.
+3. Open `getting_started.ipynb`.  
+4. Run the notebook from the drop-down menus **Run**->**Run All Cells**.  Alternatively, you can run each code cell using Shift+Enter. 
 
 
 ## Troubleshooting
 
-{troubleshooting}
-
+If the notebook doesn't run.  Check that `seaice_rt` has been installed correctly.  Follow the troubleshooting procedure in [`seaice_rt`](https://github.com/andypbarrett/seaice_radiative_transfer)
 
 ## License
 
