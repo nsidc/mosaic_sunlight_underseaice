@@ -67,23 +67,3 @@ def load_data(fp):
     return df
 
 
-def plot_thickness_profile(df, ax=None, snow_depth_exaggeration=2):
-    """Plots a thickness profile from GEM-2 and Magnaprobe data"""
-    snow_ice_interface = np.zeros(len(df.snow_depth_m))
-    snow_surface = snow_ice_interface + (df.snow_depth_m.where(df.snow_depth_m > 0.) * snow_depth_exaggeration)
-    ice_ocean_interface = snow_ice_interface - df.ice_thickness_mean_m
-    pond_depth = snow_ice_interface - df.melt_pond_depth_m.where(df.melt_pond_depth_m > 0.)
-    distance = df.transect_distance_m.values
-    ax.set_xlim(distance[0], distance[-1])
-    ax.fill_between(distance, snow_surface, snow_ice_interface, color='0.7')
-    ax.fill_between(distance, snow_ice_interface, ice_ocean_interface, color='lightblue')
-    ax.fill_between(distance, snow_ice_interface, pond_depth, color='blue')
-    
-    # Kluge fix for labels
-    ymin = np.floor(ice_ocean_interface.min() / 0.5) * 0.5
-    ymax = np.ceil(snow_surface.max() / 0.5) * 0.5
-    ax.set_ylim(ymin, ymax)
-
-    ax.set_xlabel("Transect distance (m)")
-    ax.set_ylabel("Height (m) [wrt to ice surface]")
-    #labels = ax.get_yticklabels()
