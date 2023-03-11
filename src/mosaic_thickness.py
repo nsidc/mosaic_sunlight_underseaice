@@ -83,4 +83,7 @@ def plot_thickness_profile(df, ax=None, snow_depth_exaggeration=2):
     ymin = np.floor(ice_ocean_interface.min() / 0.5) * 0.5
     ymax = np.ceil(snow_surface.max() / 0.5) * 0.5
     ax.set_ylim(ymin, ymax)
+
+    ax.set_xlabel("Transect distance (m)")
+    ax.set_ylabel("Height (m) [wrt to ice surface]")
     #labels = ax.get_yticklabels()
