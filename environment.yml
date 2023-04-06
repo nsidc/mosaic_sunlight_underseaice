@@ -1,4 +1,4 @@
-name: panarctic_underice_sunlight
+name: mosaic_underice_sunlight
 channels:
  - conda-forge
 dependencies:
