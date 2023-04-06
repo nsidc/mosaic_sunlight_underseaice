@@ -26,7 +26,7 @@ In addition you will need:
 - `pandas` for reading the transect data;  
 - `numpy`;  
 - `matplotlib` for plotting the results.  
-
+- `pytest` for testing
 
 ## Installation
 
@@ -36,7 +36,7 @@ In addition you will need:
 ```
 cd mosaic_sunlight_underseaice
 conda env create -f environment.yml
-conda activate panarctic_underice_sunlight
+conda activate mosaic_underice_sunlight
 ```  
 4. Follow the installation instructions for [`seaice_rt`](https://github.com/andypbarrett/seaice_radiative_transfer). 
 
