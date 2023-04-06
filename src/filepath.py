@@ -1,0 +1,6 @@
+from pathlib import Path
+
+
+DATAPATH = Path.home() / 'DATA' / 'Sunlight_under_seaice' / 'MOSAiC_Observations'
+RAW_DATAPATH = DATAPATH / 'raw'
+PROCESSED_DATAPATH = DATAPATH / 'processed'
