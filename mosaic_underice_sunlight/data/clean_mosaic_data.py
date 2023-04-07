@@ -19,8 +19,11 @@ x is an identifier
 z is another identifier
 location is a string identifier
 """
+import warnings
 
 import re
+
+import pandas as pd
 
 from mosaic_underice_sunlight.filepath import RAW_DATAPATH, PROCESSED_DATAPATH
 from mosaic_underice_sunlight.mosaic_thickness import load_data
@@ -129,7 +132,6 @@ def check_file_structure(path):
         raise
 
     # Run some checks
-    # - monotonic time
     # - within range lat, lon
     # - ice thickness range
     # - ice depth range
@@ -137,6 +139,9 @@ def check_file_structure(path):
     # - consistent surface type
     # - Generate plots
 
+    if not df.index.is_monotonic_increasing:
+        warnings.warn(f"Index is not monotonic increasing in {path}", UserWarning)
+        
     # Write to path
     print(df.columns)
     print(df.head())
