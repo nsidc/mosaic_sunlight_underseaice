@@ -23,6 +23,7 @@ import warnings
 
 import re
 
+import numpy as np
 import pandas as pd
 
 from mosaic_underice_sunlight.filepath import RAW_DATAPATH, PROCESSED_DATAPATH
@@ -123,8 +124,48 @@ def make_new_filepath(attrs):
     return PROCESSED_MAGNAPROBE / activity_path / filename
 
 
-def check_file_structure(path):
+def check_data_range(series, min_value, max_value, fix=False, fill_value=np.nan):
+    """Checks for out-of-expected range values.  If fix=True, set out of range 
+    values to fill_value.
+
+    Args:
+        series : (pandas.Series) series of values to check
+        min_value : (scalar) minimum acceptable values
+        max_value : (scalar) maximum acceptable values
+        fix : (bool) if True replace out of range values with fill_value
+        fill_value : (scalar) value with which to replace out of range values.
+            Default is np.nan.
+
+    Returns: same type as caller.
+
+    Notes: raises UserWarning if out of range values are found
+    """
+    in_range = series.between(min_value, max_value)
+
+    out_of_range = in_range[series.notna()] == False
+    if out_of_range.any():
+        warnings.warn(f"Out of range values in {series.name}: {out_of_range.sum()} found",
+                     UserWarning)
+
+    if fix:
+        return series.where(in_range, other=fill_value)
+
+    return series
+
+
+def df_minmax(df):
+    """Prints min and max of dataFrame for all columns"""
+    def count_nan(x):
+        return x.isna().sum()
+    
+    print(df.agg(['min', 'max', 'count', count_nan]).T)
+
+
+def check_file_structure(path, verbose=False):
     """Checks that file has constent structure and values"""
+
+    if verbose: print(f"Checking {'/'.join(path.parts[-2:])}")
+
     try:
         df = load_data(path)
     except:
@@ -141,10 +182,12 @@ def check_file_structure(path):
 
     if not df.index.is_monotonic_increasing:
         warnings.warn(f"Index is not monotonic increasing in {path}", UserWarning)
-        
+
+    # To check within bounds use Series.between(left, right)  Treats NaNs as False
     # Write to path
-    print(df.columns)
-    print(df.head())
+    df_minmax(df)
+
+    if verbose: print("-------------------------------------------------\n")
 
 
 def clean_mosaic_data():
@@ -167,10 +210,11 @@ def clean_mosaic_data():
         outpath = make_new_filepath(file_attributes)
         print(outpath)
 
-        check_file_structure(path)
-        break
+        check_file_structure(path, verbose=True)
+        #break
 
     return
-    
+
+
 if __name__ == "__main__":
     clean_mosaic_data()
