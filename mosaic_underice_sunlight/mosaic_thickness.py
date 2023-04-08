@@ -1,6 +1,7 @@
 """Functions for loading and parsing MOSAiC GEM-2 and Magnaprobe datasets"""
 
 from pathlib import Path
+import warnings
 
 import pandas as pd
 import numpy as np
@@ -51,19 +52,67 @@ def get_filename(fp, type='combined'):
         raise RuntimeError(f"Expected unique match for magna+gem2*.csv found {filelist}")
     else:
         return filelist[0]
+
+
+def infer_surface_type(df):
+    """Infers surface type from snow and pond depths.
+
+    Args:
+        df : (pandas.DataFrame) containing snow and pond depths
+
+    returns: pandas.Series containing -1, 1 or 2 meaning pond, snow or bare ice surface
     
-    
+    Notes: if pond and snow are both > 0, then np.nan is used.
+    """
+    conditions = [
+        (df.snow_depth_m > 0.) & (df.melt_pond_depth_m <= 0.),
+        (df.snow_depth_m <= 0.) & (df.melt_pond_depth_m > 0.),
+        (df.snow_depth_m <= 0.) & (df.melt_pond_depth_m <= 0.),
+        (df.snow_depth_m > 0.) & (df.melt_pond_depth_m > 0.),
+        ]
+    choices = [1, -1, 2, np.nan]
+    surface_type = np.select(conditions, choices)
+    return pd.Series(surface_type, index=df.index)
+
+
 def load_data(fp):
     """Loads a combined snowdepth and ice thickness transect"""
-    usecols = ['Date/Time', ' Lon', ' Lat', ' Local X', ' Local Y', ' Snow Depth (m)',
-       ' Melt Pond Depth (m)', ' Surface Type', ' Ice Thickness 18kHz ip (m)',
-       ' Ice Thickness 5kHz ip (m)', ' Ice Thickness 93kHz ip (m)']
-    df = pd.read_csv(fp, usecols=usecols, parse_dates=True, index_col=0)
+    df = pd.read_csv(fp, parse_dates=True, index_col=0)
     df.columns = ['_'.join(s.strip().lower().replace('(','').replace(')','').split()) for s in df.columns]
-    df['ice_thickness_mean_m'] = df[['ice_thickness_18khz_ip_m', 'ice_thickness_5khz_ip_m', 'ice_thickness_93khz_ip_m']].mean(axis=1)
-    df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
-    df['snow_depth_m'] = df['snow_depth_m'].where(df['snow_depth_m'] > 0., 0.)
+
+    return df
+
+    if 'ice_thickness_18khz_ip_m' in df:
+        df['ice_thickness_m'] = df['ice_thickness_18khz_ip_m']
+    elif 'ice_thickness_f18325hz_hcp_i_m' in df:
+        warnings.warn("Using ice_thickness_f18325hz_hcp_i_m for ice thickness",
+                     UserWarning)
+        df['ice_thickness_m'] = df['ice_thickness_f18325hz_hcp_i_m']
+    else:
+        warnings.warn("Expected ice_thickness column not found", UserWarning)
+        df['ice_thickness_m'] = np.nan
+
+    # Set pond depth <= 0. to 0.  Add column if it doesn't exists
+    if 'melt_pond_depth_m' in df:
+        df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
+    else:
+        warnings.warn("melt_pond_depth_m not found in dataFrame; adding column of zeros",
+                     UserWarning)
+        df['melt_pond_depth_m'] = 0.
+
+    # Set snow depth <= 0. to zero.  If no snow depth column raise warning and set to NaN
+    if 'snow_depth_m' in df:
+        df['snow_depth_m'] = df['snow_depth_m'].where(df['snow_depth_m'] > 0., 0.)
+    else:
+        warnings.warn("snow_depth_m not found in dataFrame;adding column of NaN",
+                     UserWarning)
+        df['snow_depth_m'] = np.nan
+
+    if 'surface_type' not in df:
+        df['surface_type'] = infer_surface_type(df)
+        
     df['transect_distance_m'] = transect_distance(df.local_x.values, df.local_y.values)
+    
     return df
 
 
