@@ -49,3 +49,13 @@ def test_infer_surface_type():
     print(result)
     print(expected)
     assert result.equals(expected)
+
+
+def test_load_data():
+    """Test to check correct columns returned.
+       Test to check logic of alternative columns
+       Test to check correct values returned.
+       May be idea to move ice_thickness_m, snow_depth_m and melt_pond_depth_m
+       to functions.
+    """
+    pass
