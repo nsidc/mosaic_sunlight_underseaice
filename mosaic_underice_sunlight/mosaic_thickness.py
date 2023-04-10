@@ -75,23 +75,96 @@ def infer_surface_type(df):
     return pd.Series(surface_type, index=df.index)
 
 
-def load_data(fp):
-    """Loads a combined snowdepth and ice thickness transect"""
-    df = pd.read_csv(fp, parse_dates=True, index_col=0)
-    df.columns = ['_'.join(s.strip().lower().replace('(','').replace(')','').split()) for s in df.columns]
+def load_raw_combined_data(fp):
+    """Loads raw files containing combined snow depth and ice 
+       thickness transect data.
 
+    Args:
+        fp : (str or Path object) filepath to combined file
+
+    Returns: pandas.Dataframe
+
+    Notes:
+        1. Some files have trailing ',' in first row, which is interpretted 
+           by pandas as an extra column and given "Unnamed: column_number".
+           This is identified and removed.
+        2. Column names have spaces and units in parentheses and are in 
+           title case, e.g "Snow Depth (m)".  columns are made lower case, 
+           spaces are replaced with "_" and parentheses removed.
+    """
+    these_columns = lambda x: Unnamed not in x
+
+    df = pd.read_csv(fp, parse_dates=True, index_col=0, usecols=these_columns)
+    df.columns = ['_'.join(s.strip().lower().replace('(','').replace(')','').split())
+                  for s in df.columns]
     return df
 
+
+def assign_ice_thickness(df, quiet=False):
+    """Adds ice_thickness_m column following Itkin et al (2023).  A ice_thickness_flag
+    column is also added.
+
+    Args:
+        df : (pandas.DataFrame) Dataframe containing raw combined data
+        quiet : (boolean) silence warnings !!!Not Implemeneted!!!
+
+    if ice_thickness_18khz_ip_m in df:
+        ice_thickness_m = df.ice_thickness_18khz_ip_m
+        ice_thickness_flag = 1
+    elif ice_thickness_f18325hz_hcp_i_m in df:
+        ice_thickness_m = df.ice_thickness_f18325hz_hcp_i_m
+        ice_thickness_flag = 2
+    else:
+        ice_thickness_m = np.nan
+        ice_thickness_flag = 0
+
+    returns None
+    """
     if 'ice_thickness_18khz_ip_m' in df:
         df['ice_thickness_m'] = df['ice_thickness_18khz_ip_m']
+        df['ice_thickness_flag'] = 1
     elif 'ice_thickness_f18325hz_hcp_i_m' in df:
         warnings.warn("Using ice_thickness_f18325hz_hcp_i_m for ice thickness",
                      UserWarning)
         df['ice_thickness_m'] = df['ice_thickness_f18325hz_hcp_i_m']
+        df['ice_thickness_flag'] = 2
     else:
         warnings.warn("Expected ice_thickness column not found", UserWarning)
         df['ice_thickness_m'] = np.nan
+        df['ice_thickness_flag'] = 0
+    return None
 
+
+def parse_raw_combined_data(fp):
+    """Parses raw combined snowdepth and ice thickness transect data files
+
+    Args:
+        fp: (str or pathlb.Path object) filepath to combined file
+    
+    Returns: pandas.DataFrame see Notes for structure
+
+    Notes: 
+    Rows are indexed by datetime.
+
+    Columns are: lon, lat, local_x, local_y, ice_thickness_m, ice_thickness_flag,
+                 snow_depth_m, melt_pond_depth_m, surface_type, transect_distance_m
+
+    All other columns are dropped.
+
+    Data for ice_thickness_m are selected following Itkin et al (2023).  Data in
+    the column ice_thickness_18khz_ip_m if this column exists.  If not, data in
+    ice_thickness_f18325hz_hcp_i_m is used.  If neither of these columns is found
+    ice_thickness_m is assigned np.nan.
+
+    melt_pond_depth_m is set to zero for pond depths <= 0.
+
+
+    """
+
+    df = load_raw_combined_data(fp)
+
+    # assign ice_thciness_m
+    
     # Set pond depth <= 0. to 0.  Add column if it doesn't exists
     if 'melt_pond_depth_m' in df:
         df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
