@@ -152,6 +152,25 @@ def assign_melt_pond_depth(df):
     return None
 
 
+def assign_snow_depth(df):
+    """Sets snow depth to 0. if <= 0. or adds column if not in dataframe
+
+    Args:
+        df : (pandas.DataFrame) raw combined dataframe
+
+    Returns: None - assigned inplace
+
+    Notes: If snow_depth_m column not present a column is added and assigned np.nan
+    """
+    if 'snow_depth_m' in df:
+        df['snow_depth_m'] = df['snow_depth_m'].where(df['snow_depth_m'] > 0., 0.)
+    else:
+        warnings.warn("snow_depth_m not found in dataFrame;adding column of NaN",
+                     UserWarning)
+        df['snow_depth_m'] = np.nan
+    return None
+
+
 def parse_raw_combined_data(fp):
     """Parses raw combined snowdepth and ice thickness transect data files
 
@@ -185,12 +204,6 @@ def parse_raw_combined_data(fp):
     # Set pond depth <= 0. to 0.  Add column if it doesn't exists
 
     # Set snow depth <= 0. to zero.  If no snow depth column raise warning and set to NaN
-    if 'snow_depth_m' in df:
-        df['snow_depth_m'] = df['snow_depth_m'].where(df['snow_depth_m'] > 0., 0.)
-    else:
-        warnings.warn("snow_depth_m not found in dataFrame;adding column of NaN",
-                     UserWarning)
-        df['snow_depth_m'] = np.nan
 
     if 'surface_type' not in df:
         df['surface_type'] = infer_surface_type(df)
