@@ -92,7 +92,7 @@ def load_raw_combined_data(fp):
            title case, e.g "Snow Depth (m)".  columns are made lower case, 
            spaces are replaced with "_" and parentheses removed.
     """
-    these_columns = lambda x: Unnamed not in x
+    these_columns = lambda x: "Unnamed" not in x
 
     df = pd.read_csv(fp, parse_dates=True, index_col=0, usecols=these_columns)
     df.columns = ['_'.join(s.strip().lower().replace('(','').replace(')','').split())
