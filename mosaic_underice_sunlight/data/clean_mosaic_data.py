@@ -46,6 +46,8 @@ def get_raw_magnaprobe_path():
     """Returns only paths to magnaprobe files
     ignores recon
     """
+    if not RAW_MAGNAPROBE.exists():
+        raise FileNotFoundError(f"Path {RAW_MAGNAPROBE} not found!")
     return [path for path in RAW_MAGNAPROBE.glob('**/magna+gem2-transect*.csv')
             if activity_id_pattern.search(path.name)]
 
