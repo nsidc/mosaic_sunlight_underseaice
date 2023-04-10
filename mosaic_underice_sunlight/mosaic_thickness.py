@@ -141,7 +141,7 @@ def assign_melt_pond_depth(df):
     Args:
         df : (pandas.DataFrame) dataframe containing raw data
     
-    Returns: None
+    Returns: None - assigned inplace
     """
     if 'melt_pond_depth_m' in df:
         df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
