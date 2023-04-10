@@ -135,6 +135,23 @@ def assign_ice_thickness(df, quiet=False):
     return None
 
 
+def assign_melt_pond_depth(df):
+    """Sets melt_pond_depth_m to zero if <= 0 or add column if not in raw dataframe
+
+    Args:
+        df : (pandas.DataFrame) dataframe containing raw data
+    
+    Returns: None
+    """
+    if 'melt_pond_depth_m' in df:
+        df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
+    else:
+        warnings.warn("melt_pond_depth_m not found in dataFrame; adding column of zeros",
+                     UserWarning)
+        df['melt_pond_depth_m'] = 0.
+    return None
+
+
 def parse_raw_combined_data(fp):
     """Parses raw combined snowdepth and ice thickness transect data files
 
@@ -166,12 +183,6 @@ def parse_raw_combined_data(fp):
     # assign ice_thciness_m
     
     # Set pond depth <= 0. to 0.  Add column if it doesn't exists
-    if 'melt_pond_depth_m' in df:
-        df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
-    else:
-        warnings.warn("melt_pond_depth_m not found in dataFrame; adding column of zeros",
-                     UserWarning)
-        df['melt_pond_depth_m'] = 0.
 
     # Set snow depth <= 0. to zero.  If no snow depth column raise warning and set to NaN
     if 'snow_depth_m' in df:
