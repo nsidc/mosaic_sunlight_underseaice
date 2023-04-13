@@ -196,8 +196,9 @@ def clean_mosaic_data():
     """Renames filepaths and reformats data files"""
 
     raw_paths = get_raw_magnaprobe_path()
-    
+
     for path in raw_paths:
+
         try:
             file_attributes = parse_filepath(path)
         except AttributeError as err:
@@ -213,7 +214,7 @@ def clean_mosaic_data():
         print(outpath)
 
         check_file_structure(path, verbose=True)
-        #break
+        break
 
     return
 

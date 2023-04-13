@@ -51,11 +51,21 @@ def test_infer_surface_type():
     assert result.equals(expected)
 
 
-def test_load_data():
     """Test to check correct columns returned.
        Test to check logic of alternative columns
        Test to check correct values returned.
        May be idea to move ice_thickness_m, snow_depth_m and melt_pond_depth_m
        to functions.
     """
+
+def test_load_raw_data():
+    """Checks that correct column names returned"""
+    pass
+
+
+def test_parse_data_columns():
+    expected_columns = ['lon', 'lat', 'local_x', 'local_y',
+                        'ice_thickness_m', 'snow_depth_m',
+                        'melt_pond_depth_m', 'surface_type',
+                        'transect_distance_m']
     pass

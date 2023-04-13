@@ -71,6 +71,18 @@ data = {
     'ice thickness f1525hz_hcp_q (m)': [41]*nindex,
     }
 
+def df_to_column_dict(df):
+    make_list = lambda vals: ', '.join([str(x) for x in vals])
+    make_tlist = lambda vals: ', '.join([d.strftime('%Y-%m-%d %H:%M:%s') for d in vals])
+    
+    print("pd.DataFrame(")
+    print("    data={")
+    for c in df.columns:
+        print(f"        '{c.strip().lower()}': [{make_list(df[c].values)}],")  # add dtype based parser
+    print("},")
+    print(f"    index={make_tlist(df.index.values)}")
+    print(")")
+
 for i, h in enumerate(header):
     columns = h.split(',')[1:]
     if columns[-1] == '':
@@ -79,6 +91,10 @@ for i, h in enumerate(header):
     df = pd.DataFrame(data_dict, columns=columns, index=date)
 
     outfile = Path('.') / 'tests' / f'magna+gem2-transect-test_file_{i:02d}.csv'
-    with open(outfile, 'w') as of:
-        of.write(h+'\n')
-        df.to_csv(of, header=False)
+    #with open(outfile, 'w') as of:
+    #    of.write(h+'\n')
+    #    df.to_csv(of, header=False)
+
+    print(outfile)
+    df_to_column_dict(df)
+    break
