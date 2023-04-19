@@ -58,9 +58,76 @@ def test_infer_surface_type():
        to functions.
     """
 
-def test_load_raw_data():
+@pytest.mark.parametrize(
+    "test_file,expected_columns",
+    [
+        (
+            "magna+gem2-transect-test_file_00.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "ice_thickness_18khz_ip_m", "ice_thickness_5khz_ip_m",
+                "ice_thickness_93khz_ip_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_01.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "ice_thickness_f1525hz_hcp_i_m", "ice_thickness_f1525hz_hcp_q_m",
+                "ice_thickness_f5325hz_hcp_i_m", "ice_thickness_f5325hz_hcp_q_m",
+                "ice_thickness_f18325hz_hcp_i_m", "ice_thickness_f18325hz_hcp_q_m",
+                "ice_thickness_f63025hz_hcp_i_m", "ice_thickness_f63025hz_hcp_q_m",
+                "ice_thickness_f93075hz_hcp_i_m", "ice_thickness_f93075hz_hcp_q_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_02.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "melt_pond_depth_m", "surface_type",
+                "ice_thickness_18khz_ip_m", "ice_thickness_5khz_ip_m",
+                "ice_thickness_93khz_ip_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_03.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "ice_thickness_18khz_ip_m", "ice_thickness_5khz_ip_m",
+                "ice_thickness_93khz_ip_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_04.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "ice_thickness_18khz_ip_m", "ice_thickness_5khz_ip_m",
+                "ice_thickness_93khz_ip_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_05.csv",
+            ["lon", "lat", "local_x", "local_y", "snow_depth_m",
+             "melt_pond_depth_m", "surface_type",
+             "ice_thickness_18khz_q_m", "ice_thickness_63khz_q_m",
+             "ice_thickness_93khz_q_m",
+            ]
+        ),
+        (
+            "magna+gem2-transect-test_file_06.csv",
+            [
+                "lon", "lat", "local_x", "local_y", "snow_depth_m",
+                "melt_pond_depth_m", "surface_type",
+                "ice_thickness_18khz_ip_m", "ice_thickness_5khz_ip_m",
+                "ice_thickness_93khz_ip_m",
+            ]
+        ),
+    ]
+)
+def test_load_raw_data(test_file, expected_columns):
     """Checks that correct column names returned"""
-    pass
+    result = mosaic_thickness.load_raw_combined_data(TESTPATH / test_file)
+    assert list(result.columns) == expected_columns
 
 
 def test_parse_data_columns():
