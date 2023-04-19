@@ -134,6 +134,53 @@ def test_load_raw_data(test_file, expected_columns):
     result = mosaic_thickness.load_raw_combined_data(TESTPATH / test_file)
     assert list(result.columns) == expected_columns
 
+@pytest.mark.parametrize(
+    "test_file,expected_thickness,expected_flag",
+    [
+        (
+            "magna+gem2-transect-test_file_00.csv",
+            10, 1
+        ),
+        (
+            "magna+gem2-transect-test_file_01.csv",
+            13, 2
+        ),
+        (
+            "magna+gem2-transect-test_file_02.csv",
+            10, 1
+        ),
+        (
+            "magna+gem2-transect-test_file_03.csv",
+            10, 1
+        ),
+        (
+            "magna+gem2-transect-test_file_04.csv",
+            10, 1
+        ),
+        (
+            "magna+gem2-transect-test_file_05.csv",
+            np.nan, 0
+        ),
+        (
+            "magna+gem2-transect-test_file_06.csv",
+            10, 1
+        )
+    ]
+)
+def test_assign_ice_thickness(test_file, expected_thickness, expected_flag):
+    """Tests that correct thickness column is assigned"""
+    df = mosaic_thickness.load_raw_combined_data(TESTPATH / test_file)
+    mosaic_thickness.assign_ice_thickness(df)
+    df_expected = pd.DataFrame(
+        {
+            'ice_thickness_m': [expected_thickness]*len(df),
+            'ice_thickness_flag': [expected_flag]*len(df),
+        },
+        index=df.index,
+    )
+    assert df.ice_thickness_m.equals(df_expected.ice_thickness_m)
+    assert df.ice_thickness_flag.equals(df_expected.ice_thickness_flag)
+
 
 def test_parse_data_columns():
     expected_columns = ['lon', 'lat', 'local_x', 'local_y',
