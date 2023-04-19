@@ -1,12 +1,17 @@
 """Test code for clean data"""
+from pathlib import Path
+import warnings
+
 import pytest
+
+import pandas as pd
+import numpy as np
 
 import mosaic_underice_sunlight.data.clean_mosaic_data as clean_data
 import mosaic_underice_sunlight.mosaic_thickness as mosaic_thickness
 
-import pandas as pd
-import numpy as np
-import warnings
+
+TESTPATH = Path("tests")
 
 
 @pytest.mark.parametrize(
