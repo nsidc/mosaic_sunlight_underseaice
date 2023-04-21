@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 
 from mosaic_underice_sunlight.filepath import RAW_DATAPATH, PROCESSED_DATAPATH
-from mosaic_underice_sunlight.mosaic_thickness import load_data
+from mosaic_underice_sunlight.mosaic_thickness import load_raw_combined_data
 
 RAW_MAGNAPROBE = RAW_DATAPATH / 'MOSAiC_magnaprobe'
 PROCESSED_MAGNAPROBE = PROCESSED_DATAPATH / 'MOSAiC_magnaprobe'

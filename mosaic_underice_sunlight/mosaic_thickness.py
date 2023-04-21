@@ -10,19 +10,10 @@ DATAPATH = Path.home() / 'Data' / 'Sunlight_under_seaice'
 GEM2_PATH = DATAPATH / 'MOSAiC_GEM2_icethickness' / '01-ice-thickness'
 MAGNAPROBE_PATH = DATAPATH / 'MOSAiC_magnaprobe'
 
-
-def load_data(fp):
-    """Loads a combined snowdepth and ice thickness transect"""
-    usecols = ['Date/Time', ' Lon', ' Lat', ' Local X', ' Local Y', ' Snow Depth (m)',
-       ' Melt Pond Depth (m)', ' Surface Type', ' Ice Thickness 18kHz ip (m)',
-       ' Ice Thickness 5kHz ip (m)', ' Ice Thickness 93kHz ip (m)']
-    df = pd.read_csv(fp, usecols=usecols, parse_dates=True, index_col=0)
-    df.columns = ['_'.join(s.strip().lower().replace('(','').replace(')','').split()) for s in df.columns]
-    df['ice_thickness_mean_m'] = df[['ice_thickness_18khz_ip_m', 'ice_thickness_5khz_ip_m', 'ice_thickness_93khz_ip_m']].mean(axis=1)
-    df['melt_pond_depth_m'] = df['melt_pond_depth_m'].where(df['melt_pond_depth_m'] > 0., 0.)
-    df['snow_depth_m'] = df['snow_depth_m'].where(df['snow_depth_m'] > 0., 0.)
-    df['transect_distance_m'] = transect_distance(df.local_x.values, df.local_y.values)
-    return df
+KEEP_THESE_COLUMNS = ['lon', 'lat', 'local_x', 'local_y',
+                      'ice_thickness_m', 'snow_depth_m',
+                      'melt_pond_depth_m', 'surface_type',
+                      'transect_distance_m', 'ice_thickness_flag']
 
 
 def icethickness_file(dsid):
@@ -213,17 +204,21 @@ def parse_raw_combined_data(fp):
 
     df = load_raw_combined_data(fp)
 
-    # assign ice_thciness_m
+    # assign ice_thickness_m
+    assign_ice_thickness(df)
     
     # Set pond depth <= 0. to 0.  Add column if it doesn't exists
-
+    assign_melt_pond_depth(df)
+    
     # Set snow depth <= 0. to zero.  If no snow depth column raise warning and set to NaN
-
+    assign_snow_depth(df)
+    
     if 'surface_type' not in df:
         df['surface_type'] = infer_surface_type(df)
         
     df['transect_distance_m'] = transect_distance(df.local_x.values, df.local_y.values)
+
     
-    return df
+    return df[KEEP_THESE_COLUMNS]
 
 

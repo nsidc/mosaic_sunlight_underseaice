@@ -1,4 +1,4 @@
-Date/Time, Lon, Lat, Local X, Local Y, Snow Depth (m), Ice Thickness f1525Hz_hcp_i (m), Ice Thickness f1525Hz_hcp_q (m) Ice Thickness f5325Hz_hcp_i (m), Ice Thickness f5325Hz_hcp_q (m), Ice Thickness f18325Hz_hcp_i (m), Ice Thickness f18325Hz_hcp_q (m), Ice Thickness f63025Hz_hcp_i (m),Ice Thickness f63025Hz_hcp_q (m), Ice Thickness f93075Hz_hcp_i (m), Ice Thickness f93075Hz_hcp_q (m)
+Date/Time, Lon, Lat, Local X, Local Y, Snow Depth (m), Ice Thickness f1525Hz_hcp_i (m), Ice Thickness f1525Hz_hcp_q (m), Ice Thickness f5325Hz_hcp_i (m), Ice Thickness f5325Hz_hcp_q (m), Ice Thickness f18325Hz_hcp_i (m), Ice Thickness f18325Hz_hcp_q (m), Ice Thickness f63025Hz_hcp_i (m), Ice Thickness f63025Hz_hcp_q (m), Ice Thickness f93075Hz_hcp_i (m), Ice Thickness f93075Hz_hcp_q (m)
 2023-04-09 06:00:00,0.0,90.0,0.0,0.0,0.0,40,,32,11,13,32,31,23,21
 2023-04-09 06:01:00,0.0,90.0,1.0,1.0,0.3,40,,32,11,13,32,31,23,21
 2023-04-09 06:02:00,0.0,90.0,2.0,2.0,0.3,40,,32,11,13,32,31,23,21
