@@ -182,6 +182,25 @@ def test_assign_ice_thickness(test_file, expected_thickness, expected_flag):
     assert df.ice_thickness_flag.equals(df_expected.ice_thickness_flag)
 
 
+@pytest.mark.parametrize(
+    "test_file,expected_snow",
+    [
+        (
+            "magna+gem2-transect-test_file_00.csv",
+            [0., 0.3, 0.3, 0., 0.]
+        ),
+    ]
+)
+def test_assign_snow_depth(test_file, expected_snow):
+    """Test that correct snow depth is assigned"""
+    df = mosaic_thickness.load_raw_combined_data(TESTPATH / test_file)
+    mosaic_thickness.assign_snow_depth(df)
+    df_expected = pd.Series(expected_snow, index=df.index)
+    print(df.snow_depth_m)
+    print(df_expected)
+    assert df.snow_depth_m.equals(df_expected)
+
+
 def test_parse_data_columns():
     expected_columns = ['lon', 'lat', 'local_x', 'local_y',
                         'ice_thickness_m', 'snow_depth_m',
