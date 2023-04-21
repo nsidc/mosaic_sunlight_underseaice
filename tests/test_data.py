@@ -201,9 +201,44 @@ def test_assign_snow_depth(test_file, expected_snow):
     assert df.snow_depth_m.equals(df_expected)
 
 
-def test_parse_data_columns():
+@pytest.mark.parametrize(
+    "test_file,expected_pond_depth",
+    [
+        (
+            "magna+gem2-transect-test_file_02.csv",
+            [0., 0.3, 0., 0.3, 0.]
+        ),
+        (
+            "magna+gem2-transect-test_file_00.csv",
+            [0., 0., 0., 0., 0.]
+        ),
+    ]
+)
+def test_assign_melt_pond_depth(test_file, expected_pond_depth):
+    df = mosaic_thickness.load_raw_combined_data(TESTPATH / test_file)
+    mosaic_thickness.assign_melt_pond_depth(df)
+    df_expected = pd.Series(expected_pond_depth, index=df.index)
+    print(df.melt_pond_depth_m)
+    print(df_expected)
+    assert df.melt_pond_depth_m.equals(df_expected)
+
+
+@pytest.mark.parametrize(
+    "test_file",
+    [
+        ("magna+gem2-transect-test_file_00.csv"),
+        ("magna+gem2-transect-test_file_01.csv"),
+        ("magna+gem2-transect-test_file_02.csv"),
+        ("magna+gem2-transect-test_file_03.csv"),
+        ("magna+gem2-transect-test_file_04.csv"),
+        ("magna+gem2-transect-test_file_05.csv"),
+        ("magna+gem2-transect-test_file_06.csv"),
+    ]
+)
+def test_parse_data_columns(test_file):
     expected_columns = ['lon', 'lat', 'local_x', 'local_y',
                         'ice_thickness_m', 'snow_depth_m',
                         'melt_pond_depth_m', 'surface_type',
-                        'transect_distance_m']
-    pass
+                        'transect_distance_m', 'ice_thickness_flag']
+    df = mosaic_thickness.parse_raw_combined_data(TESTPATH / test_file)
+    assert all(df.columns == expected_columns)
