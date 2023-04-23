@@ -15,5 +15,6 @@ dependencies:
  - dask
  - xarray
  - openpyxl
+ - earthaccess
  - pytest
  
