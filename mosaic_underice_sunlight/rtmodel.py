@@ -4,6 +4,28 @@ import numpy as np
 
 from seaicert.ccsm3_sir_de import SeaIceRT
 
+# Conversion factors for SW flux to PAR
+underice_flux2par = 3.5   # from Eq 10
+openwater_flux2par = 2.3  # from Eq 9 Stroeve et al
+
+
+def flux_to_par(df):
+    """Converts radiative flux to PAR based on whether ice is present or not
+
+    :df: pandas.DataFrame created in seaicert_mp
+
+    :returns: modified dataframe
+    """
+    # Convert radiative flux to par
+    underice_par = df["downwelling_radiative_flux_absorbed_by_ocean"] * underice_flux2par
+    ocean_par = df["downwelling_radiative_flux_absorbed_by_ocean"] * openwater_flux2par
+    df["par_absorbed_by_ocean"] = np.where(
+        df["ice_thickness_mean_m"] > 0.,
+        underice_par,
+        ocean_par
+    )
+    return
+
 
 def seaicert_mp(df):
     """Runs the SeaIceRT model for multiple points.  Output is returned as a pandas.DataFrame"""
@@ -70,4 +92,8 @@ def seaicert_mp(df):
         },
         index = df.transect_distance_m,
     )
+
+    # Convert radiative flux to ocean to PAR
+    flux_to_par(result)
+    
     return result
