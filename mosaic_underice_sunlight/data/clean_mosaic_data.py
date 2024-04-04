@@ -34,8 +34,8 @@ PROCESSED_MAGNAPROBE = PROCESSED_DATAPATH / 'MOSAiC_magnaprobe'
 
 
 # Patterns for activity id and filenames
-activity_id_str = '(\d{8})[-_]*(\w+)[-_]*(\d)[-_]*(\d+)[-_]*(\d+)'
-filename_str = '(magna.gem2)[-_]*(transect)[-_]*'+activity_id_str+'[-_]*([\w_]*).csv'
+activity_id_str = r'(\d{8})[-_]*(\w+)[-_]*(\d)[-_]*(\d+)[-_]*(\d+)'
+filename_str = r'(magna.gem2)[-_]*(transect)[-_]*'+activity_id_str+r'[-_]*([\w_]*).csv'
 
 # Compile regex for patterns
 activity_id_pattern = re.compile(activity_id_str)
