@@ -10,11 +10,16 @@ dependencies:
 
  - libgfortran ~= 3.0
  - jupyterlab
+ - dask-labextension
  - matplotlib
  - cartopy
  - dask
  - xarray
+ - h5netcdf
+ - cftime
  - openpyxl
  - earthaccess
  - pytest
+ - kerchunk
+ - fsspec
  
