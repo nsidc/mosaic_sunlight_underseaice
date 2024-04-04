@@ -122,6 +122,7 @@ def reformat_combined_file(fp, verbose=False):
     
     header, data = read_combined_file(fp)
 
+    # Check header column count matches data column count
     if not check_column_counts(header, data):
 
         # Fix header
