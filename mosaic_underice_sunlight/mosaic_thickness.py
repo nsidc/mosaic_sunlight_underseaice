@@ -1,6 +1,7 @@
 """Functions for loading and parsing MOSAiC GEM-2 and Magnaprobe datasets"""
 
 from pathlib import Path
+import re
 import warnings
 
 import pandas as pd
@@ -8,12 +9,17 @@ import numpy as np
 
 DATAPATH = Path.home() / 'Data' / 'Sunlight_under_seaice'
 GEM2_PATH = DATAPATH / 'MOSAiC_GEM2_icethickness' / '01-ice-thickness'
-MAGNAPROBE_PATH = DATAPATH / 'MOSAiC_magnaprobe'
+MAGNAPROBE_PATH = DATAPATH / 'MOSAiC_Observations' / 'raw' / 'MOSAiC_magnaprobe'
 
 KEEP_THESE_COLUMNS = ['lon', 'lat', 'local_x', 'local_y',
                       'ice_thickness_m', 'snow_depth_m',
                       'melt_pond_depth_m', 'surface_type',
                       'transect_distance_m', 'ice_thickness_flag']
+
+
+def combined_files():
+    """Returns a list of combined snow depth and ice thickness files"""
+    return [fp for fp in MAGNAPROBE_PATH.glob("*/magna+gem2-transect*.csv") if re.search(r"\d{8}_PS122-\d_\d*-\d*_", fp.name)]
 
 
 def icethickness_file(dsid):
@@ -105,6 +111,19 @@ def load_raw_combined_data(fp):
     return df
 
 
+def load_reformatted_combined_data(fp):
+    """Loads raw files containing combined snow depth and ice 
+       thickness transect data.
+
+    Args:
+        fp : (str or Path object) filepath to combined file
+
+    Returns: pandas.Dataframe
+    """
+    df = pd.read_csv(fp, parse_dates=True, index_col=0)
+    return df
+
+
 def assign_ice_thickness(df, quiet=False):
     """Adds ice_thickness_m column following Itkin et al (2023).  A ice_thickness_flag
     column is also added.
@@ -176,6 +195,30 @@ def assign_snow_depth(df):
     return None
 
 
+def check_columns(df):
+    """Returns True if essential columns are in df"""
+    THESE_COLUMNS = [
+        r'^lon$',
+        r'^lat$',
+        r'^local_x$',
+        r'^local_y$',
+        r'^ice_thickness.*$',
+        r'^snow_depth_m$',
+        r'^melt_pond_depth_m$',
+        r'^surface_type$',
+        ]
+    present = [is_column(target, df) for target in THESE_COLUMNS]
+    if not all(present):
+        raise KeyError(f"Column names have no match for {[c for c, p in zip(THESE_COLUMNS, present) if not p]}")
+
+    return True
+
+
+def is_column(target, df):
+    """Checks if regex matches dataframe column name"""
+    return any([re.search(target, c) for c in df.columns])
+
+
 def parse_raw_combined_data(fp):
     """Parses raw combined snowdepth and ice thickness transect data files
 
@@ -202,7 +245,12 @@ def parse_raw_combined_data(fp):
 
     """
 
-    df = load_raw_combined_data(fp)
+    df = load_reformatted_combined_data(fp)
+
+#    try:
+#        check_columns(df)
+#    except Exception as err:
+#        raise err
 
     # assign ice_thickness_m
     assign_ice_thickness(df)
@@ -218,7 +266,9 @@ def parse_raw_combined_data(fp):
         
     df['transect_distance_m'] = transect_distance(df.local_x.values, df.local_y.values)
 
-    
     return df[KEEP_THESE_COLUMNS]
 
 
+def load_cleaned_transect(fp):
+    """Loads a single cleaned MOSAiC transect file"""
+    return pd.read_csv(fp, index_col=0, parse_dates=True, na_values=[-999.])
