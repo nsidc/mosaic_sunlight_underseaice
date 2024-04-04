@@ -1,4 +1,11 @@
-"""Does a quick clean and processing of MOSAiC combine transect files"""
+"""Does a quick clean and processing of MOSAiC combine transect files
+
+This needs to be modified to replace the clean file generation script 
+I deleted.
+
+Check that activity id string in directory matches activity string in filename
+This might need to be done to make sure all files are loaded.
+"""
 import re
 from pathlib import Path
 
