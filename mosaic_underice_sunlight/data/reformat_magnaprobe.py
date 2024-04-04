@@ -6,6 +6,7 @@ Check all rows have same number of fields
 """
 import re
 from pathlib import Path
+from typing import Union
 
 from mosaic_underice_sunlight.mosaic_thickness import combined_files
 
@@ -81,10 +82,10 @@ def write_reformatted_data(header, data, outfile):
         [of.write(l+"\n") for l in data]
 
 
-def make_output_filepath(fp):
+def make_output_filepath(fp, dirpath=REFORMAT_PATH):
     """Generates output filepath"""
     activity_dir, filename = fp.parts[-2:]
-    return REFORMAT_PATH / fix_activity(activity_dir) / fix_filename(filename)
+    return Path(dirpath) / fix_activity(activity_dir) / fix_filename(filename)
 
 
 def check_data_fields(header, data):
@@ -116,8 +117,22 @@ def fix_data_fields(header, data):
     return newdata
 
 
-def reformat_combined_file(fp, verbose=False):
-    """Fixes formatting issues in combined Magnaprobe files"""
+def reformat_combined_file(fp: Union[str, Path],
+                           outfp: Union[str, Path],
+                           verbose: bool=False) -> None:
+    """Fixes formatting issues in combined Magnaprobe files
+
+    Parameters
+    ----------
+    fp : path to input file
+    outfp : path to write reformatted file
+    verbose : set output to verbose
+
+    Returns
+    -------
+    None
+    """
+    
     if verbose: print(f"Checking {fp}")
     
     header, data = read_combined_file(fp)
@@ -140,9 +155,8 @@ def reformat_combined_file(fp, verbose=False):
         
     header = reformat_header(header)
 
-    outpath = make_output_filepath(fp)
-    if verbose: print(f"Writing reformatted data to {outpath}")
-    write_reformatted_data(header, data, outpath)
+    if verbose: print(f"Writing reformatted data to {outfp}")
+    write_reformatted_data(header, data, outfp)
 
 
 def fix_activity(s):
@@ -187,8 +201,10 @@ def reformat_combined_files(verbose=False):
     nfile = len(filepath)
 
     for fp in filepath:
+        outpath = make_output_filepath(fp)
+
         try:
-            reformat_combined_file(fp, verbose=verbose)
+            reformat_combined_file(fp, outpath, verbose=verbose)
         except Exception as err:
             print(err)
     
