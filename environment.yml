@@ -10,6 +10,7 @@ dependencies:
 
  - libgfortran ~= 3.0
  - jupyterlab
+ - nbdime
  - dask-labextension
  - matplotlib
  - cartopy
