@@ -21,3 +21,12 @@ MET_DATAPATHS = {
     }
 
 FILLED_MET_DATAPATH = DATAPATH / 'Meteorology' / 'gap_filled'
+
+VIRTUAL_ZARR_PATH = MET_DATAPATH / 'virtual_zarr'
+VIRTUAL_ZARR_JSONS = {
+    'tower': VIRTUAL_ZARR_PATH / 'mosaic_met_tower_combined.json',
+    'asfs30': VIRTUAL_ZARR_PATH / 'mosaic_met_asfs30.json',
+    'asfs40': VIRTUAL_ZARR_PATH / 'mosaic_met_asfs40.json',
+    'asfs50': VIRTUAL_ZARR_PATH / 'mosaic_met_asfs50.json',
+    }
+    
