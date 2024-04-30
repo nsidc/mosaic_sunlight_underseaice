@@ -1,26 +1,31 @@
 name: mosaic_underice_sunlight
 channels:
  - conda-forge
+
 dependencies:
  - python ~=3.10
 
- ###################################################
- # Imported dependencies and extensions            #
- ###################################################
+###################################################
+# Imported dependencies and extensions            #
+###################################################
 
- - libgfortran ~= 3.0
+ - libgfortran~=3.0
  - jupyterlab
- - nbdime
- - dask-labextension
  - matplotlib
  - cartopy
  - dask
  - xarray
- - h5netcdf
- - cftime
  - openpyxl
  - earthaccess
  - pytest
+ - h5netcdf
  - kerchunk
  - fsspec
- 
+ - dask-labextension
+ - cftime
+ - nbdime
+ - hvplot
+ - geopandas
+ - pip
+ - pip:
+   - /home/apbarret/src/seaice_radiative_transfer
