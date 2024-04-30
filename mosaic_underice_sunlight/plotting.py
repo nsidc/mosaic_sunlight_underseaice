@@ -12,7 +12,7 @@ import pandas as pd
 from mosaic_underice_sunlight.mosaic_thickness import transect_distance
 
 
-def plot_results(df):
+def plot_results(df, title=None):
 
     distance = df.index.values
     flux_absorbed_by_ocean = df.downwelling_radiative_flux_absorbed_by_ocean
@@ -53,9 +53,12 @@ def plot_results(df):
     plot_thickness_profile(df, ax=ax[4])
     ax[4].set_xlabel('m')
 
-    fig.subplots_adjust(hspace=0.1)
+    if title:
+        fig.suptitle(title)
+    
+    fig.subplots_adjust(hspace=0.1, top=0.95)
 
-#    return fig
+    return fig
 
 
 def plot_thickness_profile(df, ax=None, snow_depth_exaggeration=1, ice_thickness_var="ice_thickness_m"):
