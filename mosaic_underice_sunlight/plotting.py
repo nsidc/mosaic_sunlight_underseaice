@@ -27,20 +27,20 @@ def plot_results(df, title=None):
     ax[0].set_xlim(t0, t1)
     ax[0].plot(distance, flux_absorbed_by_ocean)
     ax[0].set_ylim(np.array(ax[0].get_ylim()) * np.array([0., 1.1]))
-    ax[0].set_ylabel(r"$\mathrm{W\ m^{-2}}$")
+    ax[0].set_ylabel(r"$\mathrm{W\, m^{-2}}$")
     ax[0].text(0.01, 0.89, "Radiative flux absorbed by Ocean", transform=ax[0].transAxes)
     ax[0].set_xticklabels([])
 
     ax[1].set_xlim(t0, t1)
     ax[1].plot(distance, par)
-    ax[1].set_ylabel(r"$\mathrm{\mu E\ m^{-2}}\ s^{-1}$")
+    ax[1].set_ylabel(r"$\mathrm{\mu mol\, m^{-2}}\, s^{-1}$")
     ax[1].text(0.01, 0.89, "PAR absorbed by Ocean", transform=ax[1].transAxes)
     ax[1].set_xticklabels([])
     
     ax[2].set_xlim(t0, t1)
     ax[2].plot(distance, surface_downwelling_radiative_flux)
     ax[2].set_ylim(np.array(ax[2].get_ylim()) * np.array([0., 1.2]))
-    ax[2].set_ylabel(r"$\mathrm{W\ m^{-2}}$")
+    ax[2].set_ylabel(r"$\mathrm{W\, m^{-2}}$")
     ax[2].text(0.01, 0.89, "Surface downwelling flux", transform=ax[2].transAxes)
     ax[2].set_xticklabels([])
 
