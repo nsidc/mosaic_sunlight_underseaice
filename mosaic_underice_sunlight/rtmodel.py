@@ -1,4 +1,7 @@
 """Contains functions to run seaice_rt model"""
+from typing import Union
+import datetime as dt
+
 import pandas as pd
 import numpy as np
 
@@ -162,6 +165,84 @@ def flux_to_par(df):
         ocean_par
     )
     return
+
+
+def get_deci_day_of_year(timestamp: dt.datetime) -> float:
+    """Returns decimal day of year"""
+    return timestamp.day_of_year + (timestamp.hour + (timestamp.minute + timestamp.second/60.)/60.)/24.
+
+
+def seaicert_point(
+        timestamp: dt.datetime,
+        latitude: float,
+        snow_depth: float,
+        pond_depth: float,
+        ice_thickness: float,
+        surface_temperature: float,
+        air_temperature: float,
+        snow_grain_radius: float=180,
+    ):
+    """Runs SeaIceRT for a single instance
+
+    Parameters
+    ----------
+    timestamp : datetime
+    latitude : latitude (-90.,90.)
+    snow_depth : snow depth in meters 
+    pond_depth : pond depth in meters
+    ice_thickness : ice thickness in meters
+    surface_temperature : surface (skin) temperature in Kelvin
+    air_temperature: float : 2m air temperature in Kelvin
+    snow_grain_radius : effective snow grain radius in um (default = 180 um)
+
+    Returns
+    -------
+    TBD
+    """
+
+    if (snow_depth > 0.) & (pond_depth > 0.):
+        raise ValueError(f"Snow depth and pond depth cannot both be "
+                         f"greater than zero: {iday_of_year}")
+    if (snow_depth < 0.):
+        raise ValueError(f"Snow depth must be positive")
+    if (pond_depth < 0.):
+        raise ValueError(f"Melt pond depth must be positive")
+    if (ice_thickness < 0.):
+        raise ValueError(f"Ice thickness must be positive")
+    
+    model = SeaIceRT()
+
+    model.snow_grain_radius = 180.
+
+    model.day_of_year = get_deci_day_of_year(timestamp)
+    model.latitude = latitude
+    model.snow_depth = snow_depth
+    model.pond_depth = pond_depth
+    model.sea_ice_thickness = ice_thickness
+    
+    model.surface_air_temperature = air_temperature
+    model.ground_temperature = surface_temperature
+        
+    model.run()
+    output = model.get_results()
+
+    total_flux_absorbed_by_ocean = output["downwelling_shortwave_flux_absorbed_by_ocean"] + \
+                                   output["downwelling_longwave_flux_absorbed_by_ocean"]
+    
+    if ice_thickness > 0.:
+        qpar_absorbed_by_ocean = get_qpar_underice(total_flux_absorbed_by_ocean)
+    else:
+        qpar_absorbed_by_ocean = get_qpar_openwater(total_flux_absorbed_by_ocean)
+        
+    return (
+        timestamp,
+        output["downwelling_shortwave_flux_absorbed_by_ocean"],
+        output["downwelling_longwave_flux_absorbed_by_ocean"],
+        total_flux_absorbed_by_ocean,
+        qpar_absorbed_by_ocean,
+        output["surface_albedo"],
+        output["surface_downwelling_radiative_flux"],
+        )
 
 
 def seaicert_mp(df: pd.DataFrame) -> pd.DataFrame:
