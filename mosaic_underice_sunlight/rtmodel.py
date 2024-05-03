@@ -156,18 +156,31 @@ def flux_to_par(df):
     :returns: modified dataframe
     """
     # Convert radiative flux to par
-    underice_par = df["downwelling_radiative_flux_absorbed_by_ocean"] * underice_flux2par
-    ocean_par = df["downwelling_radiative_flux_absorbed_by_ocean"] * openwater_flux2par
+    underice_par = get_qpar_underice(df["downwelling_radiative_flux_absorbed_by_ocean"])
+    ocean_par = get_qpar_openwater(df["downwelling_radiative_flux_absorbed_by_ocean"])
     df["par_absorbed_by_ocean"] = np.where(
-        df["ice_thickness_mean_m"] > 0.,
+        df["ice_thickness_m"] > 0.,
         underice_par,
         ocean_par
     )
     return
 
 
-def seaicert_mp(df):
-    """Runs the SeaIceRT model for multiple points.  Output is returned as a pandas.DataFrame"""
+def seaicert_mp(df: pd.DataFrame) -> pd.DataFrame:
+    """Runs the SeaIceRT model for multiple points on a transect.  
+
+    Parameters
+    ----------
+    df : Dataframe containing day of year, latitude, snow depth in m, pond
+               depth in m, ice_thickness in meters.  Optionally skin temperature 
+               and 2 m air temperature may be in the DataFrame.  If these are not 
+               present, the default values are used (effectively 273.15).
+
+    Returns
+    -------
+    pandas.DataFrame containing shortwave absorbed flux absorbed by ocean, 
+    total radiation absorbed by ocean, albedo and surface shortwave flux
+    """
     
     model = SeaIceRT()
 
