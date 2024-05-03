@@ -77,8 +77,7 @@ def sw2par_openwater(irradiance: float) -> float:
 
 
 def rad2quanta_underice(irradiance: float) -> float:
-    """Returns an irradiance in W/m2 as quanta/m2/s for
-    underice light
+    """Returns an irradiance in W per m2 as quanta per m2 per s for underice light
 
     Parameter
     ---------
@@ -106,8 +105,7 @@ def rad2quanta_underice(irradiance: float) -> float:
 
 
 def rad2quanta_openwater(irradiance: float) -> float:
-    """Returns an irradiance in W/m2 as quanta/m2/s for
-    underice light
+    """Returns an irradiance in W per m2 as quanta per m2 per s for underice light
 
     Parameter
     ---------
