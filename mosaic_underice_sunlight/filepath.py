@@ -29,4 +29,9 @@ VIRTUAL_ZARR_JSONS = {
     'asfs40': VIRTUAL_ZARR_PATH / 'mosaic_met_asfs40.json',
     'asfs50': VIRTUAL_ZARR_PATH / 'mosaic_met_asfs50.json',
     }
-    
+
+
+def cleaned_transects():
+    """Returns a list of paths to cleaned transect files"""
+    return list((CLEAN_DATAPATH / "MOSAiC_magnaprobe").glob('*/*.csv'))
+

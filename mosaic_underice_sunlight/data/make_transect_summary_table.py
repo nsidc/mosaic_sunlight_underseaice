@@ -5,13 +5,8 @@ import re
 
 import pandas as pd
 
-from mosaic_underice_sunlight.filepath import CLEAN_DATAPATH
+from mosaic_underice_sunlight.filepath import cleaned_transects
 from mosaic_underice_sunlight.mosaic_thickness import load_cleaned_transect
-
-
-def cleaned_transects():
-    """Returns a list of paths to cleaned transect files"""
-    return list((CLEAN_DATAPATH / "MOSAiC_magnaprobe").glob('*/*.csv'))
 
 
 def activity_id_from_filename(fp):
