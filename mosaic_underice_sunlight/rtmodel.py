@@ -236,13 +236,30 @@ def seaicert_point(
         
     return (
         timestamp,
-        output["downwelling_shortwave_flux_absorbed_by_ocean"],
-        output["downwelling_longwave_flux_absorbed_by_ocean"],
-        total_flux_absorbed_by_ocean,
-        qpar_absorbed_by_ocean,
-        output["surface_albedo"],
-        output["surface_downwelling_radiative_flux"],
+        (
+            output["downwelling_shortwave_flux_absorbed_by_ocean"],
+            output["downwelling_longwave_flux_absorbed_by_ocean"],
+            total_flux_absorbed_by_ocean,
+            qpar_absorbed_by_ocean,
+            output["surface_albedo"],
+            output["surface_downwelling_radiative_flux"],
         )
+    )
+
+
+def results_to_dataframe(result):
+    """Puts results into pandas dataframe"""
+    columns=[
+        "sw_absorbed_by_ocean",
+        "lw_absorbed_by_ocean",
+        "downwelling_radiative_flux_absorbed_by_ocean",
+        "qpar_absorbed_by_ocean",
+        "surface_albedo",
+        "surface_downwelling_radiative_flux"
+    ]
+    
+    index, data = list(zip(*result))
+    return pd.DataFrame(data, index=index, columns=columns)
 
 
 def seaicert_mp(df: pd.DataFrame) -> pd.DataFrame:
