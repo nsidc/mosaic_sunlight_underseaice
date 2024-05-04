@@ -14,14 +14,14 @@ from mosaic_underice_sunlight.mosaic_thickness import transect_distance
 
 def plot_results(df, title=None):
 
-    distance = df.index.values
+    distance = df.transect_distance_m
     flux_absorbed_by_ocean = df.downwelling_radiative_flux_absorbed_by_ocean
-    par = df.par_absorbed_by_ocean
+    par = df.qpar_absorbed_by_ocean
     surface_downwelling_radiative_flux = df.surface_downwelling_radiative_flux
     surface_albedo = df.surface_albedo
 
-    t0 = distance[0]
-    t1 = distance[-1]
+    t0 = distance.iloc[0]
+    t1 = distance.iloc[-1]
 
     fig, ax = plt.subplots(5, 1, figsize=(10,7))
     ax[0].set_xlim(t0, t1)
