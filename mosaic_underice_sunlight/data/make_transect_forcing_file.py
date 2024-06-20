@@ -1,6 +1,7 @@
 """Calculates mean shortwave flux and air temperature for period of transect
 observations
 """
+from typing import Union
 
 from pathlib import Path
 import datetime as dt
@@ -13,10 +14,18 @@ import pandas as pd
 from mosaic_underice_sunlight.filepath import (MET_DATAPATHS,
                                                FILLED_MET_DATAPATH,
                                                FILLED_TSKIN_DATAPATH,
+                                               FORCING_DATAPATH,
                                                cleaned_transects)
 from mosaic_underice_sunlight.filepath import VIRTUAL_ZARR_JSONS
 from mosaic_underice_sunlight.data.mosaic_met_kerchunker import load_metdata_zarr
 from mosaic_underice_sunlight.mosaic_thickness import load_cleaned_transect
+
+
+new_column_name = {
+    "rsd": "measured_irradiance_wm2",
+    "tas": "air_temperature_K",
+    "tskin": "surface_temperature_K",
+    }
 
 
 def load_mosaic_metdata(site: str) -> xr.Dataset:
@@ -91,14 +100,26 @@ def get_met_data_for_one_transect(metds: xr.Dataset,
 
 def make_forcing_filepath(transect_file):
     """Returns path for new forcing file"""
-    print(transect_file)
+    return FORCING_DATAPATH / transect_file.relative_to(transect_file.parents[2])
 
 
-def make_one_forcing_file(transect_file, met_dataset):
+def make_one_forcing_file(transect_file: Union[Path, str],
+                          met_dataset: xr.Dataset,
+                          verbose: bool=True) -> None:
     """Extracts variables for transect date range and 
-    return as pandas dataframe.
+    writes forcing file to csv
+
+    Arguments
+    ---------
+    transect_file : Cleaned MOSAiC transect file
+    met_dataset : filled me data
+    verbose : print verbose output
+
+    Returns
+    -------
+    None
     """
-    
+    if verbose: print(f"Loading {transect_file.name}")
     transect_df = load_cleaned_transect(transect_file)
     
     met_data = get_met_data_for_one_transect(
@@ -113,26 +134,28 @@ def make_one_forcing_file(transect_file, met_dataset):
         return
     
     for variable, value in met_data.items():
-        transect_df[variable] = value
+        transect_df[new_column_name[variable]] = value
 
     fp_out = make_forcing_filepath(transect_file)
+    fp_out.parent.mkdir(parents=True, exist_ok=True)
+
+    if verbose: print(f"Writing forcing data to {fp_out}")
+    transect_df.to_csv(fp_out)
     
-    return 
+    return
 
 
-def make_transect_forcing_files():
+def make_transect_forcing_files(verbose=False):
 
     transect_files = cleaned_transects()
-    print(transect_files)
     
     # load metdata
-#    metds = load_combined_metdata()
+    metds = load_combined_metdata()
+    
+    for fp in transect_files:
+        make_one_forcing_file(fp, metds, verbose=verbose)
 
-#    for fp in transect_files[:5]:
-#        make_one_forcing_file(fp, metds)
-    
-    # Write forcing file
-    
 
 if __name__ == "__main__":
-    make_transect_forcing_files()
+    verbose=True
+    make_transect_forcing_files(verbose=verbose)
