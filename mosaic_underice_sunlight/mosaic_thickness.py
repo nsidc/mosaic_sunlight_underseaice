@@ -272,3 +272,29 @@ def parse_raw_combined_data(fp):
 def load_cleaned_transect(fp):
     """Loads a single cleaned MOSAiC transect file"""
     return pd.read_csv(fp, index_col=0, parse_dates=True, na_values=[-999.])
+
+def load_transect_metadata(polar_day=True, dropna=True):
+    """Loads transect metadata files
+    
+    Arguments
+    ---------
+    polar_day : only return transects with incident solar radiation greater than 0.
+                (Default: True)
+    dropna : if forcing data is not available, drop rows (Default: True)
+    
+    Returns
+    Pandas Dataframe containing transect id and forcing data
+    """
+    METADATA_FILE = Path("../data/transect_surface_forcing.csv")
+    transects = pd.read_csv(METADATA_FILE,
+                            index_col=0, parse_dates=True,
+                            date_format="%Y-%m-%dT%H:%M:%S")
+
+    if dropna == True:
+        transects = transects.dropna(axis=0)
+    if polar_day == True:
+        transects = transects[transects.rsd > 0.]  # Make sure sun is up
+
+    transects["skin_temp_surface"] = transects["skin_temp_surface"] + 273.15
+    transects.set_index("activity", drop=True, inplace=True)
+    return transects
