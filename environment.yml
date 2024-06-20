@@ -15,6 +15,7 @@ dependencies:
  - cartopy
  - dask
  - xarray
+ - bottleneck
  - openpyxl
  - earthaccess
  - pytest
