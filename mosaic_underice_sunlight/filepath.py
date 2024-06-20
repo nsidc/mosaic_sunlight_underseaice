@@ -21,6 +21,7 @@ MET_DATAPATHS = {
     }
 
 FILLED_MET_DATAPATH = DATAPATH / 'Meteorology' / 'gap_filled'
+FILLED_TSKIN_DATAPATH = DATAPATH / 'Meteorology' / 'gap_filled' / 'mosaic_tower_tskin.filled.csv'
 
 VIRTUAL_ZARR_PATH = MET_DATAPATH / 'virtual_zarr'
 VIRTUAL_ZARR_JSONS = {
