@@ -6,6 +6,8 @@ RAW_DATAPATH = DATAPATH / 'raw'
 REFORMAT_DATAPATH = DATAPATH / 'reformat' / 'MOSAiC_magnaprobe'
 PROCESSED_DATAPATH = DATAPATH / 'processed'
 CLEAN_DATAPATH = DATAPATH / 'clean'
+FORCING_DATAPATH = DATAPATH / 'forcing'
+RESULTS_DATAPATH = DATAPATH / 'results'
 
 MET_DATAPATH = DATAPATH / 'Meteorology'
 MET_TOWER_DATAPATH = MET_DATAPATH / 'tower' / '3_level_archive' / 'level3.4'
