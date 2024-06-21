@@ -132,7 +132,16 @@ def make_one_forcing_file(transect_file: Union[Path, str],
     if np.isnan([x for x in met_data.values()]).any():
         print(f"NaN found in period for {transect_file.name}")
         return
-    
+
+    # If irradiance is zero, skip producing forcing file
+    if (met_data['rsd'] <= 0):
+        print(f"Measured irradiance is zero for {transect_file.name}; skipping")
+        return
+
+    if transect_df.ice_thickness_m.isnull().any():
+        print(f"Ice thickness is missing for {transect_file.name}; skipping!")
+        return
+        
     for variable, value in met_data.items():
         transect_df[new_column_name[variable]] = value
 
