@@ -27,6 +27,7 @@ dependencies:
  - nbdime
  - hvplot
  - geopandas
+ - pqdm
  - pip
  - pip:
    - /home/apbarret/src/seaice_radiative_transfer
