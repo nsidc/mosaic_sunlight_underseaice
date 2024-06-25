@@ -5,6 +5,8 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 
+from pqdm.processes import pqdm
+
 from seaicert.ccsm3_sir_de import SeaIceRT
 
 # Conversion factors for SW flux to PAR
@@ -200,6 +202,16 @@ def seaicert_point(
     TBD
     """
 
+    # For debugging
+#    print(f"timestamp: {timestamp}\n"
+#          f"latitude: {latitude}\n"
+#          f"snow_depth: {snow_depth}\n"
+#          f"pond_depth: {pond_depth}\n"
+#          f"ice_thickness: {ice_thickness}\n"
+#          f"surface_temperature: {surface_temperature}\n"
+#          f"air_temperature: {air_temperature}\n"
+#          f"snow_grain_radius: {snow_grain_radius}")
+
     if (snow_depth > 0.) & (pond_depth > 0.):
         raise ValueError(f"Snow depth and pond depth cannot both be "
                          f"greater than zero: {iday_of_year}")
@@ -233,7 +245,9 @@ def seaicert_point(
         qpar_absorbed_by_ocean = get_qpar_underice(total_flux_absorbed_by_ocean)
     else:
         qpar_absorbed_by_ocean = get_qpar_openwater(total_flux_absorbed_by_ocean)
-        
+
+#    print(f"surface_downwelling_radiative_flux: {output["surface_downwelling_radiative_flux"]}\n")
+    
     return (
         timestamp,
         (
@@ -262,7 +276,40 @@ def results_to_dataframe(result):
     return pd.DataFrame(data, index=index, columns=columns)
 
 
-def seaicert_mp(df: pd.DataFrame) -> pd.DataFrame:
+def test_seaicert_point(timestamp: dt.datetime,
+        latitude: float,
+        snow_depth: float,
+        pond_depth: float,
+        ice_thickness: float,
+        surface_temperature: float,
+        air_temperature: float,
+        snow_grain_radius: float=180,
+    ):
+    """Testing parallel"""
+    return (timestamp, (1.,1.,1.,1.,1.,1.))
+
+
+def preprocess(obj):
+    """Returns object as a list of tuples"""
+
+    # Fields in dataframe to use as forcing for seaicert
+    fields = [
+        "lat",
+        "snow_depth_m",
+        "melt_pond_depth_m",
+        "ice_thickness_m",
+        "surface_temperature_K",
+        "air_temperature_K"
+    ]
+
+    if isinstance(obj, pd.DataFrame):
+        return [[idx, *values] for idx, values in obj[fields].iterrows()]
+    else:
+        raise TypeError(f"Unknown object {type(obj)}")
+
+
+def seaicert_mp(df: pd.DataFrame,
+                parallel: bool=True) -> pd.DataFrame:
     """Runs the SeaIceRT model for multiple points on a transect.  
 
     Parameters
@@ -278,17 +325,10 @@ def seaicert_mp(df: pd.DataFrame) -> pd.DataFrame:
     total radiation absorbed by ocean, albedo and surface shortwave flux
     """
 
-    # Fields in dataframe to use as forcing for seaicert
-    fields = [
-        "lat",
-        "snow_depth_m",
-        "melt_pond_depth_m",
-        "ice_thickness_m",
-        "surface_temperature_K",
-        "air_temperature_K"
-    ]
-
-    result = [seaicert_point(time, *values) for time, values in df[fields].iterrows()]
+    if parallel:
+        result = pqdm(preprocess(df), seaicert_point, n_jobs=5, argument_type="args")
+    else:
+        result = [seaicert_point(*args) for args in preprocess(df)]
 
     # Parse results into pandas.DataFrame
     rt_df = df.join(results_to_dataframe(result))
