@@ -276,19 +276,6 @@ def results_to_dataframe(result):
     return pd.DataFrame(data, index=index, columns=columns)
 
 
-def test_seaicert_point(timestamp: dt.datetime,
-        latitude: float,
-        snow_depth: float,
-        pond_depth: float,
-        ice_thickness: float,
-        surface_temperature: float,
-        air_temperature: float,
-        snow_grain_radius: float=180,
-    ):
-    """Testing parallel"""
-    return (timestamp, (1.,1.,1.,1.,1.,1.))
-
-
 def preprocess(obj):
     """Returns object as a list of tuples"""
 
@@ -330,6 +317,8 @@ def seaicert_mp(df: pd.DataFrame,
     else:
         result = [seaicert_point(*args) for args in preprocess(df)]
 
+    print(results_to_dataframe(result))
+    
     # Parse results into pandas.DataFrame
     rt_df = df.join(results_to_dataframe(result))
 
