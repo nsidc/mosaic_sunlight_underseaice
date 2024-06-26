@@ -269,9 +269,9 @@ def parse_raw_combined_data(fp):
     return df[KEEP_THESE_COLUMNS]
 
 
-def load_cleaned_transect(fp):
+def load_cleaned_transect(fp, index_col=0):
     """Loads a single cleaned MOSAiC transect file"""
-    return pd.read_csv(fp, index_col=0, parse_dates=True, na_values=[-999.])
+    return pd.read_csv(fp, index_col=index_col, parse_dates=True, na_values=[-999.])
 
 def load_transect_metadata(polar_day=True, dropna=True):
     """Loads transect metadata files
