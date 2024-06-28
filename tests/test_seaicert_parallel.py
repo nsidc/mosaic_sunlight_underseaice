@@ -16,6 +16,7 @@ def make_dataframe(n=10):
         },
         index = index,
     )
+    df.index.name = "date/time"
     return df
 
     
@@ -27,3 +28,10 @@ def test_seaicert_mp():
     result = seaicert_mp(SMALL_DATAFRAME, parallel=True)
     print(result)
     print(result.duplicated().all())
+
+
+def test_preprocess():
+    """Tests preprocessing"""
+    result = preprocess(SMALL_DATAFRAME.reset_index(names=["time"])) #preprocess(SMALL_DATAFRAME)
+    print(result)
+    
