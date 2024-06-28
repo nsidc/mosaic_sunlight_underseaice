@@ -3,6 +3,7 @@ from typing import Union, Tuple, List
 import datetime as dt
 
 import pandas as pd
+import xarray as xr
 import numpy as np
 
 from pqdm.processes import pqdm
@@ -277,9 +278,19 @@ def results_to_dataframe(result):
     return pd.DataFrame(data, index=index, columns=columns)
 
 
-def preprocess(obj):
+def preprocess(obj: Union[pd.DataFrame, xr.Dataset]) -> List[List]:
     """Returns object as a list of tuples"""
 
+    if isinstance(obj, pd.DataFrame):
+        return from_dataframe(obj)
+    elif isinstance(obj, xr.Dataset):
+        return from_dataset(obj)
+    else:
+        raise TypeError(f"Unknown object {type(obj)}")
+
+
+def from_dataframe(obj):
+    """Returns list of lists or tuples containing forcing"""
     # Fields in dataframe to use as forcing for seaicert
     fields = [
         "time",
@@ -294,10 +305,12 @@ def preprocess(obj):
         if field not in obj:
             raise KeyError(f"{field} not found in obj")
 
-    if isinstance(obj, pd.DataFrame):
-        return [[idx, *values] for idx, values in obj[fields].iterrows()]
-    else:
-        raise TypeError(f"Unknown object {type(obj)}")
+    return [[idx, *values] for idx, values in obj[fields].iterrows()]    
+
+
+def from_dataset(obj):
+    """Returns list of lists or tuples"""
+    raise NotImplementedError()
 
 
 def seaicert_mp(df: pd.DataFrame,
