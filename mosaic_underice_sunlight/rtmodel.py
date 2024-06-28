@@ -175,6 +175,7 @@ def get_deci_day_of_year(timestamp: dt.datetime) -> float:
 
 
 def seaicert_point(
+        index: int, 
         timestamp: dt.datetime,
         latitude: float,
         snow_depth: float,
@@ -249,7 +250,7 @@ def seaicert_point(
 #    print(f"surface_downwelling_radiative_flux: {output["surface_downwelling_radiative_flux"]}\n")
     
     return (
-        timestamp,
+        index,
         (
             output["downwelling_shortwave_flux_absorbed_by_ocean"],
             output["downwelling_longwave_flux_absorbed_by_ocean"],
@@ -281,6 +282,7 @@ def preprocess(obj):
 
     # Fields in dataframe to use as forcing for seaicert
     fields = [
+        "time",
         "lat",
         "snow_depth_m",
         "melt_pond_depth_m",
@@ -288,6 +290,9 @@ def preprocess(obj):
         "surface_temperature_K",
         "air_temperature_K"
     ]
+    for field in fields:
+        if field not in obj:
+            raise KeyError(f"{field} not found in obj")
 
     if isinstance(obj, pd.DataFrame):
         return [[idx, *values] for idx, values in obj[fields].iterrows()]
